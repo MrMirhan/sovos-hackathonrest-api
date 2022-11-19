@@ -42,7 +42,7 @@ exports.postAddUser = async(req, res, next) => {
 
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        let user = await User.get(newuser, 0)
+        let user = await User.get(newuser, 1)
 
         user = user.docs[0];
 
