@@ -125,3 +125,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+id_rsa_priv.pem
+id_rsa_pub.pem
+.env
+package-lock.json
