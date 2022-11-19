@@ -7,16 +7,12 @@ exports.postAddUser = async(req, res, next) => {
     try {
         // Get all fields from the clients
         const { email, password, confirm_password } = req.body;
-        // Check if email already exist
-        const checkEmail = await User.findOne({
-            email: email
-        });
-        // return error if email exist
-        if (checkEmail) {
-            return res.status(401).json({
-                message: 'Email already exist!'
-            })
+        let mUser = await User.get({ email: email }, 1)
+
+        if (mUser.docs.length > 0) {
+            return res.status(400).json({ message: 'User already exists' })
         }
+
         // Check if password and confirm password match
         if (password !== confirm_password) {
             return res.status(401).json({
@@ -29,15 +25,25 @@ exports.postAddUser = async(req, res, next) => {
         const hash = saltHash.hash;
 
         // Save new User
-        const newuser = await new User({
+        const newuser = {
+            username: email.split('@')[0],
             email: email,
             hash: hash,
             salt: salt
+        }
+
+        let user = await User.create(newuser, function(err) {
+            if (err) {
+                throw err
+            } else {
+                console.log('inserted');
+            }
         });
-        const user = await newuser.save()
+
+        user = user.docs[0];
 
         // Respond to User
-        if (newuser) {
+        if (user) {
             user.hash = undefined
             user.salt = undefined
             const tokenObject = utils.issueJWT(user);
@@ -63,14 +69,13 @@ exports.postUserLogin = async(req, res, next) => {
         // Get fields from client
         const { email, password } = req.body;
         // Check fi username exist
-        const user = await User.findOne({
-            email: email
-        })
-        if (!user) {
-            return res.status(401).json({
-                message: 'You entered the wrong credentials!'
-            })
+        let mUser = await User.get({ email: email }, 1)
+
+        if (!mUser.docs.length > 0) {
+            return res.status(400).json({ message: 'User is not signed up!' })
         }
+
+        let user = mUser.docs[0];
         // Check if password matches
         const isValid = utils.validPassword(password, user.hash, user.salt)
         if (isValid) {

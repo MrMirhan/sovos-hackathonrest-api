@@ -11,7 +11,7 @@ const morgan = require('morgan');
 require("dotenv").config()
 
 // Import Database
-const connectDB = require('./config/database');
+const initCouch = require('./config/init');
 
 // Import Routers
 const apiRouter = require('./routes/api');
@@ -19,14 +19,23 @@ const apiRouter = require('./routes/api');
 // Set up Express
 const app = express();
 
+// Set up CouchDB
+
+initCouch(function(err) {
+    if (err) {
+        throw err
+    } else {
+        console.log('couchdb initialized');
+    }
+});
+
+
 /**
  *--------- GENERAL SETUP -------------
  */
 // Morgan Logger
 app.use(morgan('dev'));
 
-// Connect to Database
-connectDB()
 
 // Express body-parser
 app.use(express.json({ limit: '50mb' }));
