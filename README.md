@@ -1,24 +1,20 @@
-# dots2.co-server
+# sovoshackathon
 
 ## Generate keypairs to encode/decode incoming and outgoing data
 ```
 node generateKeypair.js
 ```
+## To run
 
-## Authentication
-### Data
-* Name
-* Email
-* Username
-* Password
-* Confirm Password
-* Timmestamp
-### Register
-* Name
-* Email
-* Username
-* Password
-* Confirm Password
-### Login
-* Username
-* Password
+```
+npm start
+```
+## .env
+
+```
+DB_AUTH_USER -> CouchDB username
+DB_AUTH_PASS -> CouchDB password
+```
+```
+Bağlanmak istediğin couchdb konteynerinde ayarları açınca görünüyor orada admin pass user
+```
