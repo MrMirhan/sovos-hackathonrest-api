@@ -3,6 +3,14 @@ var errors = require('../config/errors');
 var users = require('../config/couchdb').use('users');
 var diff = require('object-versions').diff;
 
+users.update = function(obj, key, callback) {
+    var db = this;
+    db.get(key, function(error, existing) {
+        if (!error) obj._rev = existing._rev;
+        db.insert(obj, key, callback);
+    });
+}
+
 /// Create user
 exports.create = createUser;
 
@@ -23,32 +31,27 @@ async function createUser(user, cb) {
         }
     });
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    let nuser = await getUser(user)
-
-    return nuser
+    return true
 }
 
 exports.get = getUser;
 
 async function getUser(user, ei, cb) {
-    let q;
     if (ei == 1) {
-        q = {
+        const q = {
             selector: {
                 email: { "$eq": user.email }
             },
         };
+        return await users.find(q)
     } else if (ei == 0) {
-        q = {
+        const q = {
             selector: {
                 _id: { "$eq": user._id }
             },
         };
+        return await users.find(q)
     }
-    const response = await users.find(q)
-    return response
 }
 
 exports.update = updateUser;
@@ -66,7 +69,7 @@ function updateUser(user, cb) {
                 } else {}
             });
             if (val) {
-                await users.insert(user, function(err) {
+                await users.update(user, 'user', function(err) {
                     if (err) {
                         cb(err);
                     } else {

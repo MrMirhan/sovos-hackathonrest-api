@@ -1,13 +1,13 @@
 var schemas = require('../schemas');
 var errors = require('../config/errors');
-var users = require('../config/couchdb').use('users');
+var invoices = require('../config/couchdb').use('invoices');
 var diff = require('object-versions').diff;
 
-/// Create user
-exports.create = createUser;
+/// Create invoice
+exports.create = createInvoice;
 
-async function createUser(user, cb) {
-    schemas.validate(user, 'user', 'create', function(err) {
+async function createInvoice(invoice, cb) {
+    schemas.validate(invoice, 'invoice', 'create', function(err) {
         if (err) {
             cb(err);
         } else {
@@ -15,56 +15,60 @@ async function createUser(user, cb) {
         }
     });
 
-    const insert = await users.insert(user, function(err) {
+    const insert = await invoices.insert(invoice, function(err) {
         if (err) {
             cb(err);
         } else {
-            cb(null, user);
+            cb(null, invoice);
         }
     });
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    let nuser = await getUser(user)
-
-    return nuser
+    return true
 }
 
-exports.get = getUser;
+exports.get = getInvoice;
 
-async function getUser(user, cb) {
-    const q = {
-        selector: {
-            email: { "$eq": user.email }
-        },
-    };
-    const response = await users.find(q)
-    return response
+async function getInvoice(invoice, ei) {
+    if (ei == 1) {
+        const q = {
+            selector: {
+                invoice_no: { "$eq": invoice.invoice_no }
+            },
+        };
+        return await invoices.find(q)
+    } else if (ei == 0) {
+        const q = {
+            selector: {
+                _id: { "$eq": invoice._id }
+            },
+        };
+        return await invoices.find(q)
+    }
 }
 
-exports.update = updateUser;
+exports.update = updateInvoice;
 
-function updateUser(user, cb) {
-    users.get(user._id, errors.wrapNano(function(err, currentUser) {
+function updateInvoice(invoice, cb) {
+    invoices.get(invoice._id, errors.wrapNano(function(err, currentInvoice) {
         if (err) {
             cb(err);
         } else {
-            var userDiff = diff(currentUser, user);
-            schemas.validate(userDiff, 'user', 'update', function(err) {
+            var invoiceDiff = diff(currentInvoice, invoice);
+            schemas.validate(invoiceDiff, 'invoice', 'update', function(err) {
                 if (err) {
                     cb(err);
                 } else {
-                    users.insert(user, errors.wrapNano(cb));
+                    invoices.insert(invoice, errors.wrapNano(cb));
                 }
             });
         }
     }));
 }
 
-exports.updateDiff = updateUserDiff;
+exports.updateDiff = updateInvoiceDiff;
 
-function updateUserDiff(userDiff, cb) {
-    schemas.validate(userDiff, 'user', 'update', function(err) {
+function updateInvoiceDiff(invoiceDiff, cb) {
+    schemas.validate(invoiceDiff, 'invoice', 'update', function(err) {
         if (err) {
             cb(err);
         } else {
@@ -73,17 +77,17 @@ function updateUserDiff(userDiff, cb) {
     });
 
     function merge() {
-        users.get(userDiff._id, errors.wrapNano(function(err, user) {
+        invoices.get(invoiceDiff._id, errors.wrapNano(function(err, user) {
             if (err) {
                 cb(err);
             } else {
-                extend(user, userDiff);
-                users.insert(user, errors.wrapNano(done));
+                extend(invoice, invoiceDiff);
+                invoices.insert(invoice, errors.wrapNano(done));
             }
         }));
 
         function done(err) {
-            if (err && err.statusCode == 409 && !userDiff._rev) {
+            if (err && err.statusCode == 409 && !invoiceDiff._rev) {
                 merge(); // try again
             } else {
                 cb.apply(null, arguments);

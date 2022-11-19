@@ -19,13 +19,19 @@
     },
     "homepage": "https://github.com/Vernora/dots2.co-server#readme",
     "dependencies": {
+        "body-parser": "^1.20.1",
+        "body-parser-xml": "^2.0.3",
         "boom": "^7.3.0",
         "connect": "^3.7.0",
         "cors": "^2.8.5",
         "dotenv": "^16.0.0",
         "express": "^4.18.1",
+        "express-xml-bodyparser": "^0.3.0",
+        "fabric-contract-api": "^2.2.3",
+        "fabric-shim": "^2.2.3",
         "http": "^0.0.1-security",
         "joi": "^17.7.0",
+        "json-stringify-deterministic": "^1.0.1",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^6.7.2",
         "morgan": "^1.10.0",
@@ -36,8 +42,11 @@
         "object-versions": "^1.0.0",
         "passport": "^0.5.2",
         "passport-jwt": "^4.0.0",
+        "sinon": "^14.0.2",
+        "sort-keys-recursive": "^2.1.2",
         "vhost": "^3.0.2",
-        "winston": "^3.8.2"
+        "winston": "^3.8.2",
+        "xml2json": "^0.12.0"
     },
     "directories": {
         "lib": "lib"

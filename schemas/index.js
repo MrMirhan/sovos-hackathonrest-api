@@ -1,6 +1,6 @@
 var Joi = require('joi');
 var Boom = require('boom');
-var schemaNames = ['user'];
+var schemaNames = ['user', 'invoice'];
 var schemas = {};
 schemaNames.forEach(function(schemaName) {
     schemas[schemaName] = require('./' + schemaName);

@@ -15,6 +15,3 @@ npm start
 DB_AUTH_USER -> CouchDB username
 DB_AUTH_PASS -> CouchDB password
 ```
-```
-Bağlanmak istediğin couchdb konteynerinde ayarları açınca görünüyor orada admin pass user
-```

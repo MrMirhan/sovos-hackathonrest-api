@@ -32,13 +32,17 @@ exports.postAddUser = async(req, res, next) => {
             salt: salt
         }
 
-        let user = await User.create(newuser, function(err) {
+        let userCreate = await User.create(newuser, function(err) {
             if (err) {
                 throw err
             } else {
                 console.log('inserted');
             }
         });
+
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        let user = await User.get(newuser, 0)
 
         user = user.docs[0];
 
